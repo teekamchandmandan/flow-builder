@@ -28,10 +28,7 @@ export function ValidationPanel() {
     [selectNode, fitView],
   );
 
-  const issues: ValidationIssue[] = [
-    ...errors,
-    ...warnings,
-  ];
+  const issues: ValidationIssue[] = [...errors, ...warnings];
 
   if (issues.length === 0) {
     return (

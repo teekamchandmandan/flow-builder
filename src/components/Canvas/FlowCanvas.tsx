@@ -1,4 +1,4 @@
-import { Component, useCallback, type ReactNode } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   Background,
@@ -13,6 +13,7 @@ import { SNAP_GRID } from '@/lib/constants';
 import { CustomNode } from '@/components/Canvas/CustomNode';
 import { CustomEdge } from '@/components/Canvas/CustomEdge';
 import { EmptyState } from '@/components/Canvas/EmptyState';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 /* ------------------------------------------------------------------ */
 /*  Register types OUTSIDE component to avoid re-registration warning */
@@ -20,57 +21,6 @@ import { EmptyState } from '@/components/Canvas/EmptyState';
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = { custom: CustomEdge };
 const defaultEdgeOptions = { type: 'custom' as const, animated: false };
-
-/* ------------------------------------------------------------------ */
-/*  Error Boundary                                                     */
-/* ------------------------------------------------------------------ */
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  onReset: () => void;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class CanvasErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  override render() {
-    if (this.state.hasError) {
-      return (
-        <div className='flex h-full w-full flex-col items-center justify-center gap-4 bg-background text-foreground'>
-          <p className='text-lg font-semibold'>Something went wrong</p>
-          <p className='text-sm text-muted-foreground'>
-            The canvas encountered an unexpected error.
-          </p>
-          <button
-            type='button'
-            className='rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90'
-            onClick={() => {
-              this.props.onReset();
-              this.setState({ hasError: false });
-            }}
-          >
-            Reset
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 /* ------------------------------------------------------------------ */
 /*  FlowCanvas                                                         */
@@ -95,7 +45,12 @@ export function FlowCanvas() {
   );
 
   return (
-    <CanvasErrorBoundary onReset={reset}>
+    <ErrorBoundary
+      onReset={reset}
+      title='Something went wrong'
+      description='The canvas encountered an unexpected error.'
+      actionLabel='Reset'
+    >
       <div className='relative h-full w-full'>
         <ReactFlow
           nodes={nodes}
@@ -124,6 +79,6 @@ export function FlowCanvas() {
 
         {nodes.length === 0 && <EmptyState />}
       </div>
-    </CanvasErrorBoundary>
+    </ErrorBoundary>
   );
 }
