@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 interface ValidatedFieldProps {
   id: string;
@@ -28,7 +29,6 @@ export function ValidatedField({
   multiline = false,
   className,
 }: ValidatedFieldProps) {
-  const errorClass = error ? 'border-red-500' : '';
   const errorId = error ? `${id}-error` : undefined;
   const Component = multiline ? Textarea : Input;
 
@@ -43,7 +43,7 @@ export function ValidatedField({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={`text-sm ${errorClass} ${className ?? ''}`}
+        className={cn('text-sm', error && 'border-red-500', className)}
         aria-invalid={!!error}
         aria-describedby={errorId}
       />

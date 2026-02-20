@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { useFlowStore } from '@/store/flowStore';
 import type { FlowNode } from '@/types/flow';
 
@@ -23,7 +24,6 @@ const badgeByStatus: Partial<
 };
 
 function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
-  const nodeData = data;
   const startNodeId = useFlowStore((s) => s.startNodeId);
   const hasError = useFlowStore((s) => s.errors.some((e) => e.nodeId === id));
   const hasWarning = useFlowStore((s) =>
@@ -40,15 +40,19 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
 
   const badge = badgeByStatus[status];
   const descriptionPreview =
-    nodeData.description.length > 40
-      ? `${nodeData.description.slice(0, 40)}…`
-      : nodeData.description;
+    data.description.length > 40
+      ? `${data.description.slice(0, 40)}…`
+      : data.description;
 
   return (
     <div
-      className={`relative w-[200px] rounded-lg border-2 bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md ${borderByStatus[status]} ${selected ? 'shadow-lg ring-2 ring-violet-500/60' : ''}`}
+      className={cn(
+        'relative w-[200px] rounded-lg border-2 bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md',
+        borderByStatus[status],
+        selected && 'shadow-lg ring-2 ring-violet-500/60',
+      )}
       role='group'
-      aria-label={`Node: ${nodeData.label}${status === 'start' ? ' (start node)' : ''}${status === 'error' ? ' (has errors)' : ''}${status === 'warning' ? ' (has warnings)' : ''}`}
+      aria-label={`Node: ${data.label}${status === 'start' ? ' (start node)' : ''}${status === 'error' ? ' (has errors)' : ''}${status === 'warning' ? ' (has warnings)' : ''}`}
     >
       <Handle
         type='target'
@@ -65,7 +69,7 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
       ) : null}
 
       <div className='px-3 py-2.5 space-y-1'>
-        <p className='text-sm font-semibold truncate'>{nodeData.label}</p>
+        <p className='text-sm font-semibold truncate'>{data.label}</p>
         {descriptionPreview ? (
           <p className='text-xs text-muted-foreground truncate'>
             {descriptionPreview}

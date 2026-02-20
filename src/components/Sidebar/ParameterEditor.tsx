@@ -3,6 +3,7 @@ import { Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface ParameterEditorProps {
   parameters: Record<string, string>;
@@ -127,12 +128,14 @@ function ParameterRow({
           value={paramKey}
           onChange={(e) => onKeyChange(paramKey, e.target.value)}
           placeholder='Key'
-          className={`h-7 text-xs ${keyError ? 'border-red-500' : ''}`}
+          className={cn('h-7 text-xs', keyError && 'border-red-500')}
           aria-label={`Parameter key ${paramKey || 'empty'}`}
           aria-invalid={keyError || undefined}
         />
         {keyError && (
-          <p className='text-[10px] text-red-500' role='alert'>Parameter key is required</p>
+          <p className='text-[10px] text-red-500' role='alert'>
+            Parameter key is required
+          </p>
         )}
       </div>
       <div className='flex-1'>

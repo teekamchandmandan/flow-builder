@@ -33,6 +33,7 @@ import { Switch } from '@/components/ui/switch';
 import { EdgeEditor } from '@/components/Sidebar/EdgeEditor';
 import { ValidatedField } from '@/components/Sidebar/ValidatedField';
 import { useFlowStore } from '@/store/flowStore';
+import { cn } from '@/lib/utils';
 import type { NodeData } from '@/types/flow';
 
 /**
@@ -204,13 +205,22 @@ export function NodeSidebar() {
               value={label}
               onChange={(e) => handleFieldChange('label', e.target.value)}
               onBlur={() => markTouched('label')}
-              className={`text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0 ${labelError ? 'text-red-500' : ''}`}
+              className={cn(
+                'text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0',
+                labelError && 'text-red-500',
+              )}
               aria-label='Node label'
               aria-invalid={labelError || undefined}
               aria-describedby={labelError ? 'node-label-error' : undefined}
             />
             {labelError && (
-              <p id='node-label-error' className='text-xs text-red-500' role='alert'>Node name is required</p>
+              <p
+                id='node-label-error'
+                className='text-xs text-red-500'
+                role='alert'
+              >
+                Node name is required
+              </p>
             )}
 
             {/* Start node toggle */}

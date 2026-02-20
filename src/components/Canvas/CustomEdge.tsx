@@ -7,6 +7,7 @@ import {
 import { X } from 'lucide-react';
 
 import { useFlowStore } from '@/store/flowStore';
+import { cn } from '@/lib/utils';
 import type { EdgeData } from '@/types/flow';
 
 function CustomEdgeInner({
@@ -79,7 +80,10 @@ function CustomEdgeInner({
     <>
       <path
         id={id}
-        className={`react-flow__edge-path ${selected ? 'stroke-violet-500' : 'stroke-border'}`}
+        className={cn(
+          'react-flow__edge-path',
+          selected ? 'stroke-violet-500' : 'stroke-border',
+        )}
         d={edgePath}
         strokeWidth={2}
         fill='none'

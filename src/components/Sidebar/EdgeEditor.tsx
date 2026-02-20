@@ -13,6 +13,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ParameterEditor } from '@/components/Sidebar/ParameterEditor';
 import { useFlowStore } from '@/store/flowStore';
+import { cn } from '@/lib/utils';
 import type { FlowEdge, FlowNode } from '@/types/flow';
 
 /** Hoisted empty default to avoid new object reference each render (rerender-memo-with-default-value). */
@@ -130,12 +131,20 @@ export function EdgeEditor({ edge, sourceNodeId }: EdgeEditorProps) {
           onChange={(e) => handleConditionChange(e.target.value)}
           onBlur={() => setConditionTouched(true)}
           placeholder='Enter condition'
-          className={`h-8 text-xs ${conditionError ? 'border-red-500' : ''}`}
+          className={cn('h-8 text-xs', conditionError && 'border-red-500')}
           aria-invalid={conditionError || undefined}
-          aria-describedby={conditionError ? `edge-condition-${edge.id}-error` : undefined}
+          aria-describedby={
+            conditionError ? `edge-condition-${edge.id}-error` : undefined
+          }
         />
         {conditionError && (
-          <p id={`edge-condition-${edge.id}-error`} className='text-[11px] text-red-500' role='alert'>Condition is required</p>
+          <p
+            id={`edge-condition-${edge.id}-error`}
+            className='text-[11px] text-red-500'
+            role='alert'
+          >
+            Condition is required
+          </p>
         )}
       </div>
 

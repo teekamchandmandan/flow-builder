@@ -14,9 +14,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useFlowStore } from '@/store/flowStore';
-import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
-import { downloadJsonFile } from '@/lib/utils';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { ImportDialog } from './ImportDialog';
+import { cn, downloadJsonFile } from '@/lib/utils';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 SyntaxHighlighter.registerLanguage('json', json);
 
@@ -66,11 +66,12 @@ export function JsonPreview() {
   return (
     <>
       <div
-        className={`flex h-full flex-col border-l border-border bg-card transition-[width,opacity] duration-300 ease-in-out ${
+        className={cn(
+          'flex h-full flex-col border-l border-border bg-card transition-[width,opacity] duration-300 ease-in-out',
           jsonPanelOpen
             ? 'w-[400px] opacity-100'
-            : 'w-0 opacity-0 overflow-hidden'
-        }`}
+            : 'w-0 opacity-0 overflow-hidden',
+        )}
       >
         {/* Header */}
         <div className='flex items-center justify-between border-b border-border px-4 py-2'>

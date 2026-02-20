@@ -136,7 +136,9 @@ body {
 /*  Smooth theme transition                                            */
 /* ------------------------------------------------------------------ */
 html {
-  transition: color 200ms ease, background-color 200ms ease;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
 }
 
 /* ------------------------------------------------------------------ */
