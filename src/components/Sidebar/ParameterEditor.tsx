@@ -44,7 +44,8 @@ export function ParameterEditor({
 
   const handleRemove = useCallback(
     (key: string) => {
-      const { [key]: _, ...rest } = parameters;
+      const { [key]: _removed, ...rest } = parameters;
+      void _removed;
       onChange(rest);
     },
     [parameters, onChange],

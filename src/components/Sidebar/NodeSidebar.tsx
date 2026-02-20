@@ -77,12 +77,15 @@ export function NodeSidebar() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addEdgeOpen, setAddEdgeOpen] = useState(false);
 
-  // Reset touched state when node changes
-  useEffect(() => {
+  // Use selectedNodeId as key to reset local state without an effect
+  // (rerender-derived-state-no-effect / avoid set-state-in-effect).
+  const [stateKey, setStateKey] = useState(selectedNodeId);
+  if (stateKey !== selectedNodeId) {
+    setStateKey(selectedNodeId);
     setTouched({});
     setDeleteDialogOpen(false);
     setAddEdgeOpen(false);
-  }, [selectedNodeId]);
+  }
 
   // Auto-close sidebar if selected node is deleted (stale id).
   // Depend on a boolean rather than the full object so the effect doesn't
