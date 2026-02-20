@@ -3,7 +3,10 @@ import { z } from 'zod';
 import type { FlowSchema } from '@/types/schema';
 import type { ValidationError, ValidationResult } from '@/types/validation';
 
-const NonEmptyString = z.string().trim().min(1, { message: 'Must be a non-empty string' });
+const NonEmptyString = z
+  .string()
+  .trim()
+  .min(1, { message: 'Must be a non-empty string' });
 
 export const SchemaEdgeZ = z.object({
   to_node_id: NonEmptyString,
@@ -72,7 +75,10 @@ export const FlowSchemaZ = z
     }
   });
 
-function getNodeIdFromPath(path: (string | number)[], data: unknown): string | undefined {
+function getNodeIdFromPath(
+  path: (string | number)[],
+  data: unknown,
+): string | undefined {
   if (path[0] !== 'nodes' || typeof path[1] !== 'number') {
     return undefined;
   }
@@ -95,7 +101,10 @@ function getNodeIdFromPath(path: (string | number)[], data: unknown): string | u
   return typeof nodeId === 'string' ? nodeId : undefined;
 }
 
-function mapIssueToValidationError(issue: z.ZodIssue, data: unknown): ValidationError {
+function mapIssueToValidationError(
+  issue: z.ZodIssue,
+  data: unknown,
+): ValidationError {
   const field = issue.path.length > 0 ? issue.path.join('.') : undefined;
   const nodeId = getNodeIdFromPath(issue.path, data);
 
@@ -118,7 +127,9 @@ export function validateFlowSchema(data: unknown): ValidationResult {
     };
   }
 
-  const errors = parsed.error.issues.map((issue) => mapIssueToValidationError(issue, data));
+  const errors = parsed.error.issues.map((issue) =>
+    mapIssueToValidationError(issue, data),
+  );
 
   return {
     errors,

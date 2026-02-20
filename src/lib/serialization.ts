@@ -3,7 +3,11 @@ import { generateId } from '@/lib/utils';
 import type { FlowEdge, FlowNode } from '@/types/flow';
 import type { FlowSchema, SchemaEdge, SchemaNode } from '@/types/schema';
 
-export function toSchema(nodes: FlowNode[], edges: FlowEdge[], startNodeId: string | null): FlowSchema {
+export function toSchema(
+  nodes: FlowNode[],
+  edges: FlowEdge[],
+  startNodeId: string | null,
+): FlowSchema {
   const edgesBySource = new Map<string, FlowEdge[]>();
 
   for (const edge of edges) {
@@ -43,7 +47,11 @@ export function toSchema(nodes: FlowNode[], edges: FlowEdge[], startNodeId: stri
   };
 }
 
-export function fromSchema(schema: FlowSchema): { nodes: FlowNode[]; edges: FlowEdge[]; startNodeId: string } {
+export function fromSchema(schema: FlowSchema): {
+  nodes: FlowNode[];
+  edges: FlowEdge[];
+  startNodeId: string;
+} {
   const nodes: FlowNode[] = schema.nodes.map((schemaNode) => ({
     id: schemaNode.id,
     position: schemaNode.position ?? { x: 0, y: 0 },

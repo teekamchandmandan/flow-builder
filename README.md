@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Flow Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual flow builder built with React + TypeScript.
 
-Currently, two official plugins are available:
+Users can create conversational/logic flows as nodes and conditional edges, validate graph data, and serialize state into a schema-safe JSON structure.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## React Compiler
+- React 19 + TypeScript + Vite
+- React Flow (`@xyflow/react`) for graph modeling and canvas primitives
+- Zustand for app state
+- Zod for schema validation
+- Dagre for auto-layout
+- Tailwind CSS + shadcn/ui for UI foundations
+- Vitest + Testing Library for tests
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 20+
+- npm 10+
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Open the local URL shown by Vite (typically `http://localhost:5173`).
+
+## Scripts
+
+- `npm run dev` — start development server
+- `npm run build` — type-check and create production build
+- `npm run preview` — preview production build locally
+- `npm run lint` — run ESLint
+- `npm run test` — run tests once
+- `npm run test:watch` — run tests in watch mode
+
+## Data Layer
+
+The project defines a strict separation between:
+
+- Internal graph types (`FlowNode`, `FlowEdge`)
+- Export schema types (`FlowSchema`, `SchemaNode`, `SchemaEdge`)
+
+Core modules:
+
+- `src/types/*` — type definitions
+- `src/validation/*` — schema validation + graph validation
+- `src/lib/serialization.ts` — conversion between React Flow state and export schema
+- `src/lib/layout.ts` — auto-layout with Dagre
+
+## Validation Rules
+
+Current validation covers:
+
+- unique node IDs
+- valid `startNodeId`
+- valid edge target references
+- disconnected node warnings
+- self-loop warnings
+
+## Test Coverage
+
+Includes a serialization round-trip test to verify that converting flow data to schema and back preserves structure.
+
+## Project Structure
+
+```text
+src/
+  components/
+  lib/
+  types/
+  validation/
+  App.tsx
+  main.tsx
+```
+
+## Notes
+
+- Path alias `@/` maps to `src/`
+- Vitest is configured with `jsdom`

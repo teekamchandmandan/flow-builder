@@ -51,7 +51,9 @@ describe('serialization', () => {
     expect(restored.startNodeId).toBe('start');
     expect(restored.nodes).toHaveLength(2);
     expect(restored.edges).toHaveLength(1);
-    expect(restored.nodes.find((node) => node.id === 'start')?.data.label).toBe('Start');
+    expect(restored.nodes.find((node) => node.id === 'start')?.data.label).toBe(
+      'Start',
+    );
     expect(restored.edges[0].source).toBe('start');
     expect(restored.edges[0].target).toBe('next');
     expect(restored.edges[0].data?.condition).toBe('always');

@@ -31,7 +31,9 @@ export function autoLayout(nodes: FlowNode[], edges: FlowEdge[]): FlowNode[] {
   dagre.layout(graph);
 
   return nodes.map((node) => {
-    const dagreNode = graph.node(node.id) as { x: number; y: number } | undefined;
+    const dagreNode = graph.node(node.id) as
+      | { x: number; y: number }
+      | undefined;
     if (!dagreNode) {
       return node;
     }
