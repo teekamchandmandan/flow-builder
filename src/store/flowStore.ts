@@ -52,7 +52,7 @@ type StoreState = {
   addNode: () => void;
   deleteNode: (nodeId: string) => void;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
-  setStartNode: (nodeId: string) => void;
+  setStartNode: (nodeId: string | null) => void;
 
   addEdge: (connection: Connection) => void;
   deleteEdge: (edgeId: string) => void;
@@ -87,15 +87,6 @@ function toSnapshot(
     edges: state.edges,
     startNodeId: state.startNodeId,
   };
-}
-
-function updateHistoryFlags(
-  set: (updater: (state: StoreState) => Partial<StoreState>) => void,
-): void {
-  set((state) => ({
-    canUndo: state.past.length > 0,
-    canRedo: state.future.length > 0,
-  }));
 }
 
 function pushSnapshot(
@@ -134,6 +125,20 @@ function validateState(
   }));
 }
 
+/**
+ * Wraps a typical mutation: pushSnapshot → apply updater → validate.
+ * Reduces boilerplate across all mutating store actions.
+ */
+function withMutation(
+  set: (updater: (state: StoreState) => Partial<StoreState>) => void,
+  get: () => StoreState,
+  updater: (state: StoreState) => Partial<StoreState>,
+): void {
+  pushSnapshot(set, get);
+  set(updater);
+  validateState(get, set);
+}
+
 function createInitialState(): Pick<
   StoreState,
   | 'nodes'
@@ -169,9 +174,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
   ...createInitialState(),
 
   addNode: () => {
-    pushSnapshot(set, get);
-
-    set((state) => {
+    withMutation(set, get, (state) => {
       const lastNode = state.nodes[state.nodes.length - 1];
       const position = lastNode
         ? {
@@ -194,8 +197,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
         nodes: [...state.nodes, node],
       };
     });
-
-    get().validate();
   },
 
   deleteNode: (nodeId) => {
@@ -206,9 +207,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
-    pushSnapshot(set, get);
-
-    set((current) => {
+    withMutation(set, get, (current) => {
       const nodes = current.nodes.filter((node) => node.id !== nodeId);
       const edges = current.edges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId,
@@ -225,8 +224,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
           current.selectedNodeId === nodeId ? false : current.sidebarOpen,
       };
     });
-
-    get().validate();
   },
 
   updateNodeData: (nodeId, data) => {
@@ -237,9 +234,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
-    pushSnapshot(set, get);
-
-    set((current) => ({
+    withMutation(set, get, (current) => ({
       nodes: current.nodes.map((node) =>
         node.id === nodeId
           ? {
@@ -252,25 +247,21 @@ export const useFlowStore = create<StoreState>((set, get) => ({
           : node,
       ),
     }));
-
-    get().validate();
   },
 
   setStartNode: (nodeId) => {
-    const state = get();
-    const exists = state.nodes.some((node) => node.id === nodeId);
+    if (nodeId !== null) {
+      const state = get();
+      const exists = state.nodes.some((node) => node.id === nodeId);
 
-    if (!exists) {
-      return;
+      if (!exists) {
+        return;
+      }
     }
 
-    pushSnapshot(set, get);
-
-    set(() => ({
+    withMutation(set, get, () => ({
       startNodeId: nodeId,
     }));
-
-    get().validate();
   },
 
   addEdge: (connection) => {
@@ -279,8 +270,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
     if (!source || !target) {
       return;
     }
-
-    pushSnapshot(set, get);
 
     const newEdge: FlowEdge = {
       id: generateId(),
@@ -294,11 +283,9 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       },
     };
 
-    set((state) => ({
+    withMutation(set, get, (state) => ({
       edges: [...state.edges, newEdge],
     }));
-
-    get().validate();
   },
 
   deleteEdge: (edgeId) => {
@@ -309,13 +296,9 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
-    pushSnapshot(set, get);
-
-    set((current) => ({
+    withMutation(set, get, (current) => ({
       edges: current.edges.filter((edge) => edge.id !== edgeId),
     }));
-
-    get().validate();
   },
 
   updateEdgeData: (edgeId, data) => {
@@ -326,9 +309,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
-    pushSnapshot(set, get);
-
-    set((current) => ({
+    withMutation(set, get, (current) => ({
       edges: current.edges.map((edge) =>
         edge.id === edgeId
           ? {
@@ -342,8 +323,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
           : edge,
       ),
     }));
-
-    get().validate();
   },
 
   updateEdgeTarget: (edgeId, targetNodeId) => {
@@ -355,9 +334,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
-    pushSnapshot(set, get);
-
-    set((current) => ({
+    withMutation(set, get, (current) => ({
       edges: current.edges.map((edge) =>
         edge.id === edgeId
           ? {
@@ -367,8 +344,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
           : edge,
       ),
     }));
-
-    get().validate();
   },
 
   onNodesChange: (changes) => {
@@ -479,19 +454,22 @@ export const useFlowStore = create<StoreState>((set, get) => ({
 
     const previous = state.past[state.past.length - 1];
     const currentSnapshot = toSnapshot(state);
+    const newPast = state.past.slice(0, -1);
+    const newFuture = [currentSnapshot, ...state.future];
 
     set(() => ({
       nodes: previous.nodes,
       edges: previous.edges,
       startNodeId: previous.startNodeId,
-      past: state.past.slice(0, -1),
-      future: [currentSnapshot, ...state.future],
+      past: newPast,
+      future: newFuture,
+      canUndo: newPast.length > 0,
+      canRedo: newFuture.length > 0,
       selectedNodeId: null,
       sidebarOpen: false,
     }));
 
-    updateHistoryFlags(set);
-    get().validate();
+    validateState(get, set);
   },
 
   redo: () => {
@@ -503,26 +481,24 @@ export const useFlowStore = create<StoreState>((set, get) => ({
 
     const [next, ...remainingFuture] = state.future;
     const currentSnapshot = toSnapshot(state);
+    const nextPast = [...state.past, currentSnapshot];
+    if (nextPast.length > MAX_HISTORY_SIZE) {
+      nextPast.shift();
+    }
 
-    set(() => {
-      const nextPast = [...state.past, currentSnapshot];
-      if (nextPast.length > MAX_HISTORY_SIZE) {
-        nextPast.shift();
-      }
+    set(() => ({
+      nodes: next.nodes,
+      edges: next.edges,
+      startNodeId: next.startNodeId,
+      past: nextPast,
+      future: remainingFuture,
+      canUndo: nextPast.length > 0,
+      canRedo: remainingFuture.length > 0,
+      selectedNodeId: null,
+      sidebarOpen: false,
+    }));
 
-      return {
-        nodes: next.nodes,
-        edges: next.edges,
-        startNodeId: next.startNodeId,
-        past: nextPast,
-        future: remainingFuture,
-        selectedNodeId: null,
-        sidebarOpen: false,
-      };
-    });
-
-    updateHistoryFlags(set);
-    get().validate();
+    validateState(get, set);
   },
 
   reset: () => {

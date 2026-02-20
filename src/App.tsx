@@ -1,6 +1,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 
 import { FlowCanvas } from '@/components/Canvas/FlowCanvas';
+import { NodeSidebar } from '@/components/Sidebar/NodeSidebar';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
         <div className='flex-1'>
           <FlowCanvas />
         </div>
+        <NodeSidebar />
       </div>
     </ReactFlowProvider>
   );

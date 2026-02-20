@@ -4,7 +4,6 @@ import {
   Background,
   Controls,
   MiniMap,
-  type Connection,
   type NodeMouseHandler,
   BackgroundVariant,
 } from '@xyflow/react';
@@ -86,23 +85,14 @@ export function FlowCanvas() {
   const closeSidebar = useFlowStore((s) => s.closeSidebar);
   const reset = useFlowStore((s) => s.reset);
 
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      addEdge(connection);
-    },
-    [addEdge],
-  );
-
+  // Zustand selectors return stable references — pass directly
+  // instead of wrapping in useCallback (rerender-simple-expression-in-memo).
   const onNodeClick: NodeMouseHandler = useCallback(
     (_event, node) => {
       selectNode(node.id);
     },
     [selectNode],
   );
-
-  const onPaneClick = useCallback(() => {
-    closeSidebar();
-  }, [closeSidebar]);
 
   return (
     <CanvasErrorBoundary onReset={reset}>
@@ -112,10 +102,10 @@ export function FlowCanvas() {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          onConnect={addEdge}
           isValidConnection={isValidConnection}
           onNodeClick={onNodeClick}
-          onPaneClick={onPaneClick}
+          onPaneClick={closeSidebar}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={defaultEdgeOptions}
