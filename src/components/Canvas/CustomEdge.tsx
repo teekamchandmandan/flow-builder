@@ -82,12 +82,12 @@ function CustomEdgeInner({
         className={`react-flow__edge-path ${selected ? 'stroke-violet-500' : 'stroke-border'}`}
         d={edgePath}
         strokeWidth={2}
-        fill="none"
+        fill='none'
       />
 
       <EdgeLabelRenderer>
         <div
-          className="nodrag nopan group pointer-events-auto absolute"
+          className='nodrag nopan group pointer-events-auto absolute'
           style={{
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
           }}
@@ -99,14 +99,14 @@ function CustomEdgeInner({
               onChange={(e) => setDraft(e.target.value)}
               onBlur={commitEdit}
               onKeyDown={onKeyDown}
-              className="rounded border border-input bg-background px-2 py-0.5 text-xs text-foreground outline-none ring-1 ring-ring w-32"
-              aria-label="Edit edge condition"
+              className='rounded border border-input bg-background px-2 py-0.5 text-xs text-foreground outline-none ring-1 ring-ring w-32'
+              aria-label='Edit edge condition'
             />
           ) : (
             <button
-              type="button"
+              type='button'
               onClick={onLabelClick}
-              className="cursor-pointer rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground shadow-sm transition-colors hover:bg-muted"
+              className='cursor-pointer rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground shadow-sm transition-colors hover:bg-muted'
               aria-label={`Edge condition: ${condition}`}
             >
               {truncated || 'Add condition'}
@@ -114,12 +114,12 @@ function CustomEdgeInner({
           )}
 
           <button
-            type="button"
+            type='button'
             onClick={handleDelete}
-            className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100"
-            aria-label="Delete edge"
+            className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
+            aria-label='Delete edge'
           >
-            <X className="h-2.5 w-2.5" />
+            <X className='h-2.5 w-2.5' />
           </button>
         </div>
       </EdgeLabelRenderer>

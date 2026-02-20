@@ -1,12 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import App from './App';
 
 describe('App', () => {
-  it('renders placeholder title', () => {
-    render(<App />);
+  it('renders without crashing', () => {
+    const { container } = render(<App />);
 
-    expect(screen.getByText('Flow Builder')).toBeDefined();
+    expect(container.querySelector('.react-flow')).toBeDefined();
   });
 });

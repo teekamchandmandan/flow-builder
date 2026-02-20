@@ -34,7 +34,10 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class CanvasErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -47,14 +50,14 @@ class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   override render() {
     if (this.state.hasError) {
       return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background text-foreground">
-          <p className="text-lg font-semibold">Something went wrong</p>
-          <p className="text-sm text-muted-foreground">
+        <div className='flex h-full w-full flex-col items-center justify-center gap-4 bg-background text-foreground'>
+          <p className='text-lg font-semibold'>Something went wrong</p>
+          <p className='text-sm text-muted-foreground'>
             The canvas encountered an unexpected error.
           </p>
           <button
-            type="button"
-            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+            type='button'
+            className='rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90'
             onClick={() => {
               this.props.onReset();
               this.setState({ hasError: false });
@@ -103,7 +106,7 @@ export function FlowCanvas() {
 
   return (
     <CanvasErrorBoundary onReset={reset}>
-      <div className="relative h-full w-full">
+      <div className='relative h-full w-full'>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -124,8 +127,8 @@ export function FlowCanvas() {
           <Background variant={BackgroundVariant.Dots} gap={SNAP_GRID[0]} />
           <Controls />
           <MiniMap
-            className="!bg-card !border-border"
-            maskColor="rgba(0,0,0,0.1)"
+            className='!bg-card !border-border'
+            maskColor='rgba(0,0,0,0.1)'
           />
         </ReactFlow>
 
