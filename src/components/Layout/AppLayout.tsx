@@ -14,12 +14,12 @@ import { NodeSidebar } from '@/components/Sidebar/NodeSidebar';
  */
 export function AppLayout() {
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className='flex h-screen flex-col bg-background text-foreground'>
       <Toolbar />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className='flex flex-1 overflow-hidden'>
         {/* Canvas — fills all remaining space */}
-        <div className="relative flex-1">
+        <div className='relative flex-1'>
           <FlowCanvas />
         </div>
 
@@ -31,7 +31,7 @@ export function AppLayout() {
       <NodeSidebar />
 
       {/* Toast notifications */}
-      <Toaster position="bottom-right" richColors closeButton />
+      <Toaster position='bottom-right' richColors closeButton />
     </div>
   );
 }

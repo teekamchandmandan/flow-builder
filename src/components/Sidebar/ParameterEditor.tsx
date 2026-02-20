@@ -44,9 +44,11 @@ export function ParameterEditor({
 
   const handleRemove = useCallback(
     (key: string) => {
-      const { [key]: _removed, ...rest } = parameters;
-      void _removed;
-      onChange(rest);
+      onChange(
+        Object.fromEntries(
+          Object.entries(parameters).filter(([k]) => k !== key),
+        ),
+      );
     },
     [parameters, onChange],
   );

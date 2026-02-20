@@ -28,37 +28,40 @@ export function ValidationPanel() {
     [selectNode, fitView],
   );
 
-  const issues: (ValidationError | ValidationWarning)[] = [...errors, ...warnings];
+  const issues: (ValidationError | ValidationWarning)[] = [
+    ...errors,
+    ...warnings,
+  ];
 
   if (issues.length === 0) {
     return (
-      <div className="px-4 py-3 text-xs text-muted-foreground">
+      <div className='px-4 py-3 text-xs text-muted-foreground'>
         No issues found
       </div>
     );
   }
 
   return (
-    <ScrollArea className="max-h-[200px]">
-      <div className="space-y-1 p-2">
+    <ScrollArea className='max-h-[200px]'>
+      <div className='space-y-1 p-2'>
         {issues.map((issue, i) => (
           <button
             key={i}
-            type="button"
-            className="flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-muted"
+            type='button'
+            className='flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-muted'
             onClick={() => handleItemClick(issue.nodeId)}
           >
             {issue.type === 'error' ? (
-              <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-500" />
+              <XCircle className='mt-0.5 h-3.5 w-3.5 shrink-0 text-red-500' />
             ) : (
-              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+              <AlertTriangle className='mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500' />
             )}
-            <div className="min-w-0 flex-1">
-              <p className="truncate">{issue.message}</p>
+            <div className='min-w-0 flex-1'>
+              <p className='truncate'>{issue.message}</p>
               {issue.nodeId && (
                 <Badge
-                  variant="secondary"
-                  className="mt-0.5 text-[10px] px-1 py-0"
+                  variant='secondary'
+                  className='mt-0.5 text-[10px] px-1 py-0'
                 >
                   {issue.nodeId.slice(0, 8)}…
                 </Badge>

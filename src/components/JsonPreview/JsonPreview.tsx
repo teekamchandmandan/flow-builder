@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import atomOneDark from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark';
@@ -7,22 +7,16 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useFlowStore } from '@/store/flowStore';
 import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
-import { useState, useCallback } from 'react';
+import { downloadJsonFile } from '@/lib/utils';
 
 SyntaxHighlighter.registerLanguage('json', json);
-
-function downloadJson(jsonString: string) {
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'flow-schema.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 /**
  * Collapsible JSON preview panel with live syntax-highlighted output,
@@ -59,7 +53,7 @@ export function JsonPreview() {
   }, [jsonString]);
 
   const handleDownload = useCallback(() => {
-    downloadJson(jsonString);
+    downloadJsonFile(jsonString);
     toast.success('Downloaded flow-schema.json');
   }, [jsonString]);
 
@@ -70,23 +64,25 @@ export function JsonPreview() {
     <>
       <div
         className={`flex h-full flex-col border-l border-border bg-card transition-[width,opacity] duration-300 ease-in-out ${
-          jsonPanelOpen ? 'w-[400px] opacity-100' : 'w-0 opacity-0 overflow-hidden'
+          jsonPanelOpen
+            ? 'w-[400px] opacity-100'
+            : 'w-0 opacity-0 overflow-hidden'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <span className="text-sm font-semibold">JSON Schema</span>
-          <div className="flex items-center gap-1">
+        <div className='flex items-center justify-between border-b border-border px-4 py-2'>
+          <span className='text-sm font-semibold'>JSON Schema</span>
+          <div className='flex items-center gap-1'>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
+                  variant='ghost'
+                  size='icon'
+                  className='h-7 w-7'
                   onClick={() => setImportOpen(true)}
-                  aria-label="Import JSON"
+                  aria-label='Import JSON'
                 >
-                  <Upload className="h-3.5 w-3.5" />
+                  <Upload className='h-3.5 w-3.5' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Import</TooltipContent>
@@ -94,13 +90,13 @@ export function JsonPreview() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
+                  variant='ghost'
+                  size='icon'
+                  className='h-7 w-7'
                   onClick={handleDownload}
-                  aria-label="Download JSON"
+                  aria-label='Download JSON'
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  <Download className='h-3.5 w-3.5' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Download</TooltipContent>
@@ -108,13 +104,13 @@ export function JsonPreview() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
+                  variant='ghost'
+                  size='icon'
+                  className='h-7 w-7'
                   onClick={handleCopy}
-                  aria-label="Copy JSON"
+                  aria-label='Copy JSON'
                 >
-                  <Copy className="h-3.5 w-3.5" />
+                  <Copy className='h-3.5 w-3.5' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Copy</TooltipContent>
@@ -122,13 +118,13 @@ export function JsonPreview() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
+                  variant='ghost'
+                  size='icon'
+                  className='h-7 w-7'
                   onClick={toggleJsonPanel}
-                  aria-label="Close JSON panel"
+                  aria-label='Close JSON panel'
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className='h-3.5 w-3.5' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Close</TooltipContent>
@@ -137,18 +133,18 @@ export function JsonPreview() {
         </div>
 
         {/* Validation summary */}
-        <div className="border-b border-border px-4 py-1.5 text-xs">
+        <div className='border-b border-border px-4 py-1.5 text-xs'>
           {errorCount === 0 && warningCount === 0 ? (
-            <span className="text-green-600 dark:text-green-400">✓ Valid</span>
+            <span className='text-green-600 dark:text-green-400'>✓ Valid</span>
           ) : (
-            <span className="space-x-2">
+            <span className='space-x-2'>
               {errorCount > 0 && (
-                <span className="text-red-500">
+                <span className='text-red-500'>
                   ✕ {errorCount} error{errorCount !== 1 ? 's' : ''}
                 </span>
               )}
               {warningCount > 0 && (
-                <span className="text-amber-500">
+                <span className='text-amber-500'>
                   ⚠ {warningCount} warning{warningCount !== 1 ? 's' : ''}
                 </span>
               )}
@@ -157,9 +153,9 @@ export function JsonPreview() {
         </div>
 
         {/* JSON content */}
-        <ScrollArea className="flex-1">
+        <ScrollArea className='flex-1'>
           <SyntaxHighlighter
-            language="json"
+            language='json'
             style={atomOneDark}
             customStyle={{
               margin: 0,

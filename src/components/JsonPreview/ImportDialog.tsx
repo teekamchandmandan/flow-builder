@@ -82,7 +82,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogContent className='sm:max-w-[560px]'>
         <DialogHeader>
           <DialogTitle>Import Flow</DialogTitle>
           <DialogDescription>
@@ -94,14 +94,14 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           value={jsonText}
           onChange={(e) => setJsonText(e.target.value)}
           placeholder='{"startNodeId": "...", "nodes": [...]}'
-          className="min-h-[300px] font-mono text-xs"
+          className='min-h-[300px] font-mono text-xs'
           rows={20}
         />
 
         {importErrors.length > 0 && (
-          <div className="space-y-1 rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950">
+          <div className='space-y-1 rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950'>
             {importErrors.map((err, i) => (
-              <p key={i} className="text-xs text-red-600 dark:text-red-400">
+              <p key={i} className='text-xs text-red-600 dark:text-red-400'>
                 {err}
               </p>
             ))}
@@ -109,7 +109,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)}>
+          <Button variant='outline' onClick={() => handleOpenChange(false)}>
             Cancel
           </Button>
           <Button
@@ -118,7 +118,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 Importing…
               </>
             ) : (

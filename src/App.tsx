@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import { AppLayout } from '@/components/Layout/AppLayout';
 import { useFlowStore } from '@/store/flowStore';
+import { downloadJsonFile } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
 /*  Global keyboard shortcuts                                          */
@@ -34,14 +35,7 @@ function useGlobalShortcuts() {
 
       if (mod && e.key === 's') {
         e.preventDefault();
-        const jsonString = useFlowStore.getState().exportJSON();
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'flow-schema.json';
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadJsonFile(useFlowStore.getState().exportJSON());
         return;
       }
 
@@ -79,15 +73,15 @@ class AppErrorBoundary extends Component<
   override render() {
     if (this.state.hasError) {
       return (
-        <div className="flex h-screen w-full items-center justify-center bg-background text-foreground">
-          <div className="text-center space-y-2">
-            <p className="text-lg font-semibold">Something went wrong</p>
-            <p className="text-sm text-muted-foreground">
+        <div className='flex h-screen w-full items-center justify-center bg-background text-foreground'>
+          <div className='text-center space-y-2'>
+            <p className='text-lg font-semibold'>Something went wrong</p>
+            <p className='text-sm text-muted-foreground'>
               Please refresh the page to continue.
             </p>
             <button
-              type="button"
-              className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+              type='button'
+              className='rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90'
               onClick={() => {
                 this.setState({ hasError: false });
                 window.location.reload();

@@ -27,6 +27,7 @@ import {
 import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
 import { useFlowStore } from '@/store/flowStore';
 import { autoLayout } from '@/lib/layout';
+import { downloadJsonFile } from '@/lib/utils';
 
 /**
  * Fixed top toolbar with action buttons.
@@ -46,10 +47,10 @@ export function Toolbar() {
   const exportJSON = useFlowStore((s) => s.exportJSON);
   const errorCount = useFlowStore((s) => s.errors.length);
   const warningCount = useFlowStore((s) => s.warnings.length);
-  const nodes = useFlowStore((s) => s.nodes);
-  const edges = useFlowStore((s) => s.edges);
 
-  const { fitView, setNodes } = useReactFlow();
+  // Avoid subscribing to nodes/edges just for auto-layout handler.
+  // Read at call time via getState() (rerender-defer-reads).
+  const { fitView } = useReactFlow();
 
   const [importOpen, setImportOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() =>
@@ -57,14 +58,7 @@ export function Toolbar() {
   );
 
   const handleDownload = useCallback(() => {
-    const jsonString = exportJSON();
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'flow-schema.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadJsonFile(exportJSON());
     toast.success('Downloaded flow-schema.json');
   }, [exportJSON]);
 
@@ -79,9 +73,11 @@ export function Toolbar() {
   }, [exportJSON]);
 
   const handleAutoLayout = useCallback(() => {
-    const laidOut = autoLayout(nodes, edges);
-    setNodes(laidOut);
-    // Also update the store
+    // Read nodes/edges at call time instead of subscribing (rerender-defer-reads).
+    const { nodes: currentNodes, edges: currentEdges } =
+      useFlowStore.getState();
+    const laidOut = autoLayout(currentNodes, currentEdges);
+    // Update store only — it's the single source of truth for React Flow.
     useFlowStore.getState().onNodesChange(
       laidOut.map((node) => ({
         type: 'position' as const,
@@ -93,7 +89,7 @@ export function Toolbar() {
       fitView({ duration: 300 });
     });
     toast.success('Layout applied');
-  }, [nodes, edges, setNodes, fitView]);
+  }, [fitView]);
 
   const handleToggleDark = useCallback(() => {
     const next = !darkMode;
@@ -104,25 +100,25 @@ export function Toolbar() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-card px-4">
+      <header className='flex h-12 shrink-0 items-center justify-between border-b border-border bg-card px-4'>
         {/* Left: Title */}
-        <div className="flex items-center gap-2">
-          <Code2 className="h-5 w-5 text-violet-500" />
-          <span className="text-sm font-bold tracking-tight">Flow Builder</span>
+        <div className='flex items-center gap-2'>
+          <Code2 className='h-5 w-5 text-violet-500' />
+          <span className='text-sm font-bold tracking-tight'>Flow Builder</span>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1">
+        <div className='flex items-center gap-1'>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={addNode}
-                aria-label="Add node"
+                aria-label='Add node'
               >
-                <Plus className="h-4 w-4" />
+                <Plus className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Add Node</TooltipContent>
@@ -131,14 +127,14 @@ export function Toolbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={undo}
                 disabled={!canUndo}
-                aria-label="Undo"
+                aria-label='Undo'
               >
-                <Undo2 className="h-4 w-4" />
+                <Undo2 className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Undo (⌘Z)</TooltipContent>
@@ -147,31 +143,31 @@ export function Toolbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={redo}
                 disabled={!canRedo}
-                aria-label="Redo"
+                aria-label='Redo'
               >
-                <Redo2 className="h-4 w-4" />
+                <Redo2 className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Redo (⌘⇧Z)</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation='vertical' className='mx-1 h-5' />
 
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={() => setImportOpen(true)}
-                aria-label="Import JSON"
+                aria-label='Import JSON'
               >
-                <Upload className="h-4 w-4" />
+                <Upload className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Import</TooltipContent>
@@ -180,13 +176,13 @@ export function Toolbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={handleDownload}
-                aria-label="Download JSON"
+                aria-label='Download JSON'
               >
-                <Download className="h-4 w-4" />
+                <Download className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Download (⌘S)</TooltipContent>
@@ -195,30 +191,30 @@ export function Toolbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={handleCopy}
-                aria-label="Copy JSON"
+                aria-label='Copy JSON'
               >
-                <Copy className="h-4 w-4" />
+                <Copy className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Copy JSON</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation='vertical' className='mx-1 h-5' />
 
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={jsonPanelOpen ? 'secondary' : 'ghost'}
-                size="icon"
-                className="h-8 w-8"
+                size='icon'
+                className='h-8 w-8'
                 onClick={toggleJsonPanel}
-                aria-label="Toggle JSON panel"
+                aria-label='Toggle JSON panel'
               >
-                <Code2 className="h-4 w-4" />
+                <Code2 className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>JSON Panel</TooltipContent>
@@ -227,41 +223,46 @@ export function Toolbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={handleAutoLayout}
-                aria-label="Auto layout"
+                aria-label='Auto layout'
               >
-                <LayoutGrid className="h-4 w-4" />
+                <LayoutGrid className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Auto Layout</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation='vertical' className='mx-1 h-5' />
 
           {/* Validation badge */}
-          <ValidationBadge errorCount={errorCount} warningCount={warningCount} />
+          <ValidationBadge
+            errorCount={errorCount}
+            warningCount={warningCount}
+          />
 
           {/* Dark mode toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={handleToggleDark}
-                aria-label="Toggle dark mode"
+                aria-label='Toggle dark mode'
               >
                 {darkMode ? (
-                  <Sun className="h-4 w-4" />
+                  <Sun className='h-4 w-4' />
                 ) : (
-                  <Moon className="h-4 w-4" />
+                  <Moon className='h-4 w-4' />
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{darkMode ? 'Light mode' : 'Dark mode'}</TooltipContent>
+            <TooltipContent>
+              {darkMode ? 'Light mode' : 'Dark mode'}
+            </TooltipContent>
           </Tooltip>
         </div>
       </header>
@@ -287,18 +288,19 @@ function ValidationBadge({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1 px-2 text-red-500"
+            variant='ghost'
+            size='sm'
+            className='h-8 gap-1 px-2 text-red-500'
             aria-label={`${errorCount} validation error${errorCount !== 1 ? 's' : ''}`}
           >
-            <XCircle className="h-4 w-4" />
-            <span className="text-xs">{errorCount}</span>
+            <XCircle className='h-4 w-4' />
+            <span className='text-xs'>{errorCount}</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
           {errorCount} error{errorCount !== 1 ? 's' : ''}
-          {warningCount > 0 && `, ${warningCount} warning${warningCount !== 1 ? 's' : ''}`}
+          {warningCount > 0 &&
+            `, ${warningCount} warning${warningCount !== 1 ? 's' : ''}`}
         </TooltipContent>
       </Tooltip>
     );
@@ -309,13 +311,13 @@ function ValidationBadge({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1 px-2 text-amber-500"
+            variant='ghost'
+            size='sm'
+            className='h-8 gap-1 px-2 text-amber-500'
             aria-label={`${warningCount} validation warning${warningCount !== 1 ? 's' : ''}`}
           >
-            <AlertTriangle className="h-4 w-4" />
-            <span className="text-xs">{warningCount}</span>
+            <AlertTriangle className='h-4 w-4' />
+            <span className='text-xs'>{warningCount}</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
@@ -329,13 +331,13 @@ function ValidationBadge({
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-1 px-2 text-green-500"
-          aria-label="No validation issues"
+          variant='ghost'
+          size='sm'
+          className='h-8 gap-1 px-2 text-green-500'
+          aria-label='No validation issues'
         >
-          <CheckCircle className="h-4 w-4" />
-          <span className="text-xs">Valid</span>
+          <CheckCircle className='h-4 w-4' />
+          <span className='text-xs'>Valid</span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>No issues found</TooltipContent>
