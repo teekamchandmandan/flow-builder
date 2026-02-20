@@ -131,3 +131,66 @@ body {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Smooth theme transition                                            */
+/* ------------------------------------------------------------------ */
+html {
+  transition: color 200ms ease, background-color 200ms ease;
+}
+
+/* ------------------------------------------------------------------ */
+/*  React Flow theme overrides                                         */
+/* ------------------------------------------------------------------ */
+.react-flow__node {
+  font-family: inherit;
+}
+
+.react-flow__handle {
+  background-color: var(--accent-500, #8b5cf6) !important;
+  border-color: var(--accent-600, #7c3aed) !important;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+.react-flow__background {
+  --xy-background-color: var(--background) !important;
+  --xy-background-pattern-color: oklch(0.7 0 0 / 30%) !important;
+}
+
+.dark .react-flow__background {
+  --xy-background-pattern-color: oklch(0.5 0 0 / 25%) !important;
+}
+
+.react-flow__controls {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.react-flow__controls-button {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  fill: var(--foreground) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--muted) !important;
+}
+
+.react-flow__minimap {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Focus visible ring (global)                                        */
+/* ------------------------------------------------------------------ */
+*:focus-visible {
+  outline: 2px solid var(--accent-500, #8b5cf6);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

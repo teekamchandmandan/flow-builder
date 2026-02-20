@@ -22,3 +22,8 @@ declare module 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark' {
   const style: Record<string, React.CSSProperties>;
   export default style;
 }
+
+declare module 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-light' {
+  const style: Record<string, React.CSSProperties>;
+  export default style;
+}

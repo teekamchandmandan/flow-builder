@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/tooltip';
 import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
 import { useFlowStore } from '@/store/flowStore';
+import { useDarkMode } from '@/hooks/useDarkMode';
 import { autoLayout } from '@/lib/layout';
 import { downloadJsonFile } from '@/lib/utils';
 
@@ -53,9 +54,7 @@ export function Toolbar() {
   const { fitView } = useReactFlow();
 
   const [importOpen, setImportOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() =>
-    document.documentElement.classList.contains('dark'),
-  );
+  const darkMode = useDarkMode();
 
   const handleDownload = useCallback(() => {
     downloadJsonFile(exportJSON());
@@ -95,7 +94,6 @@ export function Toolbar() {
     const next = !darkMode;
     document.documentElement.classList.toggle('dark', next);
     localStorage.setItem('theme', next ? 'dark' : 'light');
-    setDarkMode(next);
   }, [darkMode]);
 
   return (

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import atomOneDark from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark';
+import atomOneLight from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-light';
 import { Copy, Download, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -15,6 +16,7 @@ import {
 import { useFlowStore } from '@/store/flowStore';
 import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
 import { downloadJsonFile } from '@/lib/utils';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 SyntaxHighlighter.registerLanguage('json', json);
 
@@ -36,6 +38,7 @@ export function JsonPreview() {
   const exportJSON = useFlowStore((s) => s.exportJSON);
 
   const [importOpen, setImportOpen] = useState(false);
+  const isDark = useDarkMode();
 
   const jsonString = useMemo(
     () => exportJSON(),
@@ -156,7 +159,7 @@ export function JsonPreview() {
         <ScrollArea className='flex-1'>
           <SyntaxHighlighter
             language='json'
-            style={atomOneDark}
+            style={isDark ? atomOneDark : atomOneLight}
             customStyle={{
               margin: 0,
               padding: '1rem',

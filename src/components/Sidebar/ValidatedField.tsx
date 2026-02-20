@@ -29,6 +29,7 @@ export function ValidatedField({
   className,
 }: ValidatedFieldProps) {
   const errorClass = error ? 'border-red-500' : '';
+  const errorId = error ? `${id}-error` : undefined;
   const Component = multiline ? Textarea : Input;
 
   return (
@@ -43,8 +44,14 @@ export function ValidatedField({
         onBlur={onBlur}
         placeholder={placeholder}
         className={`text-sm ${errorClass} ${className ?? ''}`}
+        aria-invalid={!!error}
+        aria-describedby={errorId}
       />
-      {error && <p className='text-xs text-red-500'>{error}</p>}
+      {error && (
+        <p id={errorId} className='text-xs text-red-500' role='alert'>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

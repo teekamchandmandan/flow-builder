@@ -131,9 +131,11 @@ export function EdgeEditor({ edge, sourceNodeId }: EdgeEditorProps) {
           onBlur={() => setConditionTouched(true)}
           placeholder='Enter condition'
           className={`h-8 text-xs ${conditionError ? 'border-red-500' : ''}`}
+          aria-invalid={conditionError || undefined}
+          aria-describedby={conditionError ? `edge-condition-${edge.id}-error` : undefined}
         />
         {conditionError && (
-          <p className='text-[11px] text-red-500'>Condition is required</p>
+          <p id={`edge-condition-${edge.id}-error`} className='text-[11px] text-red-500' role='alert'>Condition is required</p>
         )}
       </div>
 

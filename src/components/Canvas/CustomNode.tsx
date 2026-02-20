@@ -46,9 +46,9 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
 
   return (
     <div
-      className={`relative w-[200px] rounded-lg border-2 bg-card text-card-foreground shadow-sm transition-shadow ${borderByStatus[status]} ${selected ? 'shadow-md ring-2 ring-ring' : ''}`}
+      className={`relative w-[200px] rounded-lg border-2 bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md ${borderByStatus[status]} ${selected ? 'shadow-lg ring-2 ring-violet-500/60' : ''}`}
       role='group'
-      aria-label={nodeData.label}
+      aria-label={`Node: ${nodeData.label}${status === 'start' ? ' (start node)' : ''}${status === 'error' ? ' (has errors)' : ''}${status === 'warning' ? ' (has warnings)' : ''}`}
     >
       <Handle
         type='target'

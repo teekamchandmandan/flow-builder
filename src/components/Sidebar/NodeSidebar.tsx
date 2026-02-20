@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -121,8 +122,15 @@ export function NodeSidebar() {
 
   const handleDeleteConfirm = useCallback(() => {
     if (selectedNodeId) {
-      deleteNode(selectedNodeId);
+      const removedEdgeCount = deleteNode(selectedNodeId);
       setDeleteDialogOpen(false);
+      if (removedEdgeCount && removedEdgeCount > 0) {
+        toast.success(
+          `Removed node and ${removedEdgeCount} connected edge${removedEdgeCount !== 1 ? 's' : ''}`,
+        );
+      } else {
+        toast.success('Node removed');
+      }
     }
   }, [selectedNodeId, deleteNode]);
 
@@ -198,9 +206,11 @@ export function NodeSidebar() {
               onBlur={() => markTouched('label')}
               className={`text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0 ${labelError ? 'text-red-500' : ''}`}
               aria-label='Node label'
+              aria-invalid={labelError || undefined}
+              aria-describedby={labelError ? 'node-label-error' : undefined}
             />
             {labelError && (
-              <p className='text-xs text-red-500'>Node name is required</p>
+              <p id='node-label-error' className='text-xs text-red-500' role='alert'>Node name is required</p>
             )}
 
             {/* Start node toggle */}

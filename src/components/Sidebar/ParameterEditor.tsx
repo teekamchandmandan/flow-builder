@@ -129,9 +129,10 @@ function ParameterRow({
           placeholder='Key'
           className={`h-7 text-xs ${keyError ? 'border-red-500' : ''}`}
           aria-label={`Parameter key ${paramKey || 'empty'}`}
+          aria-invalid={keyError || undefined}
         />
         {keyError && (
-          <p className='text-[10px] text-red-500'>Parameter key is required</p>
+          <p className='text-[10px] text-red-500' role='alert'>Parameter key is required</p>
         )}
       </div>
       <div className='flex-1'>

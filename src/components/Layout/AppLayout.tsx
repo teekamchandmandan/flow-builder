@@ -4,6 +4,7 @@ import { FlowCanvas } from '@/components/Canvas/FlowCanvas';
 import { JsonPreview } from '@/components/JsonPreview/JsonPreview';
 import { Toolbar } from '@/components/Layout/Toolbar';
 import { NodeSidebar } from '@/components/Sidebar/NodeSidebar';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 /**
  * Full-viewport app layout:
@@ -13,6 +14,8 @@ import { NodeSidebar } from '@/components/Sidebar/NodeSidebar';
  *  - Sonner <Toaster /> for toast notifications.
  */
 export function AppLayout() {
+  const isDark = useDarkMode();
+
   return (
     <div className='flex h-screen flex-col bg-background text-foreground'>
       <Toolbar />
@@ -31,7 +34,12 @@ export function AppLayout() {
       <NodeSidebar />
 
       {/* Toast notifications */}
-      <Toaster position='bottom-right' richColors closeButton />
+      <Toaster
+        position='bottom-right'
+        richColors
+        closeButton
+        theme={isDark ? 'dark' : 'light'}
+      />
     </div>
   );
 }

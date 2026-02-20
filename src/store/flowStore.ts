@@ -50,7 +50,7 @@ type StoreState = {
   canRedo: boolean;
 
   addNode: () => void;
-  deleteNode: (nodeId: string) => void;
+  deleteNode: (nodeId: string) => number | undefined;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   setStartNode: (nodeId: string | null) => void;
 
@@ -207,6 +207,10 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       return;
     }
 
+    const connectedEdgeCount = state.edges.filter(
+      (edge) => edge.source === nodeId || edge.target === nodeId,
+    ).length;
+
     withMutation(set, get, (current) => {
       const nodes = current.nodes.filter((node) => node.id !== nodeId);
       const edges = current.edges.filter(
@@ -224,6 +228,8 @@ export const useFlowStore = create<StoreState>((set, get) => ({
           current.selectedNodeId === nodeId ? false : current.sidebarOpen,
       };
     });
+
+    return connectedEdgeCount;
   },
 
   updateNodeData: (nodeId, data) => {
