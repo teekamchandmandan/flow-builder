@@ -532,8 +532,9 @@ export const useFlowStore = create<StoreState>((set, get) => ({
   },
 }));
 
-export function isValidConnection(connection: Connection): boolean {
-  const { source, target } = connection;
+export function isValidConnection(connection: Connection | FlowEdge): boolean {
+  const source = connection.source;
+  const target = connection.target;
 
   if (!source || !target) {
     return false;

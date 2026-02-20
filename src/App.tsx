@@ -1,8 +1,16 @@
+import { ReactFlowProvider } from '@xyflow/react';
+
+import { FlowCanvas } from '@/components/Canvas/FlowCanvas';
+
 function App() {
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white text-slate-900 dark:bg-gray-900 dark:text-slate-100'>
-      Flow Builder
-    </div>
+    <ReactFlowProvider>
+      <div className="flex h-screen w-screen flex-col bg-background text-foreground">
+        <div className="flex-1">
+          <FlowCanvas />
+        </div>
+      </div>
+    </ReactFlowProvider>
   );
 }
 
