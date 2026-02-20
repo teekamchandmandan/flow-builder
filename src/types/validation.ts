@@ -14,6 +14,9 @@ export interface ValidationWarning {
   message: string;
 }
 
+/** Discriminated union covering both error and warning issues. */
+export type ValidationIssue = ValidationError | ValidationWarning;
+
 export interface ValidationResult {
   errors: ValidationError[];
   warnings: ValidationWarning[];

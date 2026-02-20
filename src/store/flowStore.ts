@@ -15,7 +15,11 @@ import {
 import { fromSchema, toSchema } from '@/lib/serialization';
 import { generateId } from '@/lib/utils';
 import type { EdgeData, FlowEdge, FlowNode, NodeData } from '@/types/flow';
-import type { ValidationError, ValidationWarning } from '@/types/validation';
+import type {
+  ValidationError,
+  ValidationIssue,
+  ValidationWarning,
+} from '@/types/validation';
 import { parseFlowSchema } from '@/validation/schemas';
 import { validateAll } from '@/validation';
 
@@ -67,8 +71,8 @@ type StoreState = {
   closeSidebar: () => void;
 
   validate: () => void;
-  getNodeErrors: (nodeId: string) => (ValidationError | ValidationWarning)[];
-  getEdgeErrors: (edgeId: string) => (ValidationError | ValidationWarning)[];
+  getNodeErrors: (nodeId: string) => ValidationIssue[];
+  getEdgeErrors: (edgeId: string) => ValidationIssue[];
 
   exportJSON: () => string;
   importJSON: (jsonString: string) => ImportResult;
@@ -418,7 +422,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       const schema = parseFlowSchema(parsed);
       const hydrated = fromSchema(schema);
 
-      set((state) => ({
+      set(() => ({
         nodes: hydrated.nodes,
         edges: hydrated.edges,
         startNodeId: hydrated.startNodeId,
@@ -428,8 +432,6 @@ export const useFlowStore = create<StoreState>((set, get) => ({
         future: [],
         canUndo: false,
         canRedo: false,
-        errors: state.errors,
-        warnings: state.warnings,
       }));
 
       get().validate();

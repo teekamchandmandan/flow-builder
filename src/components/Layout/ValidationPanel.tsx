@@ -5,7 +5,7 @@ import { AlertTriangle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFlowStore } from '@/store/flowStore';
-import type { ValidationError, ValidationWarning } from '@/types/validation';
+import type { ValidationIssue } from '@/types/validation';
 
 /**
  * Collapsible validation panel listing all current errors and warnings.
@@ -28,7 +28,7 @@ export function ValidationPanel() {
     [selectNode, fitView],
   );
 
-  const issues: (ValidationError | ValidationWarning)[] = [
+  const issues: ValidationIssue[] = [
     ...errors,
     ...warnings,
   ];
@@ -44,9 +44,9 @@ export function ValidationPanel() {
   return (
     <ScrollArea className='max-h-[200px]'>
       <div className='space-y-1 p-2'>
-        {issues.map((issue, i) => (
+        {issues.map((issue) => (
           <button
-            key={i}
+            key={`${issue.type}-${issue.nodeId ?? 'graph'}-${issue.message}`}
             type='button'
             className='flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-muted'
             onClick={() => handleItemClick(issue.nodeId)}
