@@ -81,9 +81,7 @@ describe('validateGraph', () => {
   it('no start node → error', () => {
     const schema: FlowSchema = {
       startNodeId: 'missing',
-      nodes: [
-        { id: 'A', description: 'A', prompt: 'PA', edges: [] },
-      ],
+      nodes: [{ id: 'A', description: 'A', prompt: 'PA', edges: [] }],
     };
 
     const result = validateGraph(schema);

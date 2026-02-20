@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  SchemaEdgeZ,
-  SchemaNodeZ,
-  FlowSchemaZ,
-} from '@/validation/schemas';
+import { SchemaEdgeZ, SchemaNodeZ, FlowSchemaZ } from '@/validation/schemas';
 
 describe('SchemaEdgeZ', () => {
   it('valid edge passes', () => {
@@ -197,7 +193,9 @@ describe('FlowSchemaZ', () => {
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
       expect(
-        messages.some((m) => m.includes('startNodeId') || m.includes('existing')),
+        messages.some(
+          (m) => m.includes('startNodeId') || m.includes('existing'),
+        ),
       ).toBe(true);
     }
   });

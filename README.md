@@ -54,26 +54,26 @@ Open `http://localhost:5173` in your browser.
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| Cmd/Ctrl+Z | Undo |
-| Cmd/Ctrl+Shift+Z | Redo |
-| Cmd/Ctrl+S | Download JSON |
+| Shortcut         | Action                       |
+| ---------------- | ---------------------------- |
+| Cmd/Ctrl+Z       | Undo                         |
+| Cmd/Ctrl+Shift+Z | Redo                         |
+| Cmd/Ctrl+S       | Download JSON                |
 | Delete/Backspace | Remove selected node or edge |
-| Escape | Close sidebar |
+| Escape           | Close sidebar                |
 
 ## Tech Stack
 
-| Technology | Rationale |
-|------------|-----------|
-| **React 19 + TypeScript + Vite** | Fast iteration with type safety and near-instant HMR. Vite's ESM-native dev server keeps feedback loops tight. |
-| **React Flow (`@xyflow/react`)** | Purpose-built library for node-based graph UIs — handles rendering, interaction, viewport, and connection logic out of the box. |
-| **Zustand** | Minimal boilerplate global state without Context/Provider nesting. Direct `getState()` access enables deferred reads that avoid unnecessary re-renders. Simpler than Redux for a single-store app. |
-| **Tailwind CSS + shadcn/ui** | Utility-first styling with pre-built, accessible Radix-based components (Dialog, Select, Switch, Tooltip, Sheet). Avoids writing custom primitives. |
-| **Zod** | Runtime schema validation for JSON import/export, with structured error paths that map directly to field-level UI feedback. |
-| **react-syntax-highlighter** | Syntax-highlighted JSON preview with dark/light theme support (atom-one-dark / atom-one-light). |
-| **@dagrejs/dagre** | Directed graph layout algorithm for automatic node positioning. |
-| **Vitest + Testing Library** | Fast Vite-native test runner with jsdom, compatible with React Testing Library. |
+| Technology                       | Rationale                                                                                                                                                                                          |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **React 19 + TypeScript + Vite** | Fast iteration with type safety and near-instant HMR. Vite's ESM-native dev server keeps feedback loops tight.                                                                                     |
+| **React Flow (`@xyflow/react`)** | Purpose-built library for node-based graph UIs — handles rendering, interaction, viewport, and connection logic out of the box.                                                                    |
+| **Zustand**                      | Minimal boilerplate global state without Context/Provider nesting. Direct `getState()` access enables deferred reads that avoid unnecessary re-renders. Simpler than Redux for a single-store app. |
+| **Tailwind CSS + shadcn/ui**     | Utility-first styling with pre-built, accessible Radix-based components (Dialog, Select, Switch, Tooltip, Sheet). Avoids writing custom primitives.                                                |
+| **Zod**                          | Runtime schema validation for JSON import/export, with structured error paths that map directly to field-level UI feedback.                                                                        |
+| **react-syntax-highlighter**     | Syntax-highlighted JSON preview with dark/light theme support (atom-one-dark / atom-one-light).                                                                                                    |
+| **@dagrejs/dagre**               | Directed graph layout algorithm for automatic node positioning.                                                                                                                                    |
+| **Vitest + Testing Library**     | Fast Vite-native test runner with jsdom, compatible with React Testing Library.                                                                                                                    |
 
 ## Architecture
 
@@ -148,9 +148,17 @@ src/
 npm run test
 ```
 
-- **Store tests** (9 tests) — Unit tests against Zustand store: addNode, deleteNode (cascading edge removal), setStartNode, updateEdgeTarget, validate, exportJSON, importJSON (success + failure), undo
-- **Serialization tests** — Round-trip: `toSchema` → validate → `fromSchema` → verify data preservation
-- **App smoke test** — Full `<App>` render, asserts React Flow container mounts
+64 tests across 7 files:
+
+| Test file                    | Tests | Coverage                                                                                                                                                 |
+| ---------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Graph validation**         | 7     | Reachability (DFS), disconnected warnings, self-loops, missing start node, linear chains, branching                                                      |
+| **Schema validation**        | 18    | Edge/node/schema Zod parsing — valid inputs, missing fields, empty strings, duplicate IDs, invalid references                                            |
+| **Serialization**            | 11    | `toSchema` (empty state, single node, edges, parameters, positions), `fromSchema` (nodes, edges, missing positions, startNodeId), round-trip equivalence |
+| **Serialization round-trip** | 1     | `toSchema` → validate → `fromSchema` → verify structural preservation                                                                                    |
+| **Store (original)**         | 9     | addNode, deleteNode (cascading), setStartNode, updateEdgeTarget, validate, exportJSON, importJSON (success + failure), undo                              |
+| **Store (extended)**         | 17    | Node CRUD, edge CRUD, start node toggling, validation integration (errors/clean state), undo/redo                                                        |
+| **App smoke**                | 1     | Full `<App>` render, asserts React Flow container mounts                                                                                                 |
 
 ## Build
 
@@ -160,11 +168,11 @@ npm run build
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Type-check and create production build |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run tests once |
-| `npm run test:watch` | Run tests in watch mode |
+| Command              | Description                            |
+| -------------------- | -------------------------------------- |
+| `npm run dev`        | Start development server               |
+| `npm run build`      | Type-check and create production build |
+| `npm run preview`    | Preview production build locally       |
+| `npm run lint`       | Run ESLint                             |
+| `npm run test`       | Run tests once                         |
+| `npm run test:watch` | Run tests in watch mode                |

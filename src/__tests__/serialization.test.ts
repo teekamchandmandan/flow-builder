@@ -201,7 +201,11 @@ describe('serialization', () => {
         {
           id: 'next',
           position: { x: 150, y: 200 },
-          data: { label: 'Next', description: 'Second node', prompt: 'Continue' },
+          data: {
+            label: 'Next',
+            description: 'Second node',
+            prompt: 'Continue',
+          },
         },
       ];
 
