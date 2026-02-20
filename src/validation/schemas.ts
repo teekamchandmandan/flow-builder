@@ -76,7 +76,7 @@ export const FlowSchemaZ = z
   });
 
 function getNodeIdFromPath(
-  path: (string | number)[],
+  path: PropertyKey[],
   data: unknown,
 ): string | undefined {
   if (path[0] !== 'nodes' || typeof path[1] !== 'number') {

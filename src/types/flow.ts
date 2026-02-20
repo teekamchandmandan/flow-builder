@@ -4,11 +4,13 @@ export interface NodeData {
   label: string;
   description: string;
   prompt: string;
+  [key: string]: unknown;
 }
 
 export interface EdgeData {
   condition: string;
   parameters?: Record<string, string>;
+  [key: string]: unknown;
 }
 
 export type FlowNode = Node<NodeData>;
