@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import {
-  CheckCircle,
   Code2,
   Copy,
   Download,
@@ -12,23 +11,17 @@ import {
   Sun,
   Undo2,
   Upload,
-  XCircle,
-  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { ImportDialog } from '@/components/JsonPreview/ImportDialog';
+import { ToolbarButton } from '@/components/Layout/ToolbarButton';
+import { ValidationBadgeDropdown } from '@/components/Layout/ValidationBadgeDropdown';
 import { useFlowStore } from '@/store/flowStore';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { useJsonActions } from '@/hooks/useJsonActions';
 import { autoLayout } from '@/lib/layout';
-import { downloadJsonFile } from '@/lib/utils';
 
 /**
  * Fixed top toolbar with action buttons.
@@ -45,7 +38,6 @@ export function Toolbar() {
   const canRedo = useFlowStore((s) => s.canRedo);
   const toggleJsonPanel = useFlowStore((s) => s.toggleJsonPanel);
   const jsonPanelOpen = useFlowStore((s) => s.jsonPanelOpen);
-  const exportJSON = useFlowStore((s) => s.exportJSON);
   const errorCount = useFlowStore((s) => s.errors.length);
   const warningCount = useFlowStore((s) => s.warnings.length);
 
@@ -55,21 +47,7 @@ export function Toolbar() {
 
   const [importOpen, setImportOpen] = useState(false);
   const darkMode = useDarkMode();
-
-  const handleDownload = useCallback(() => {
-    downloadJsonFile(exportJSON());
-    toast.success('Downloaded flow-schema.json');
-  }, [exportJSON]);
-
-  const handleCopy = useCallback(async () => {
-    try {
-      const jsonString = exportJSON();
-      await navigator.clipboard.writeText(jsonString);
-      toast.success('Copied to clipboard!');
-    } catch {
-      toast.error('Failed to copy to clipboard');
-    }
-  }, [exportJSON]);
+  const { handleCopy, handleDownload } = useJsonActions();
 
   const handleAutoLayout = useCallback(() => {
     // Read nodes/edges at call time instead of subscribing (rerender-defer-reads).
@@ -107,238 +85,89 @@ export function Toolbar() {
 
         {/* Right: Actions */}
         <div className='flex items-center gap-1'>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={addNode}
-                aria-label='Add node'
-              >
-                <Plus className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Add Node</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={undo}
-                disabled={!canUndo}
-                aria-label='Undo'
-              >
-                <Undo2 className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Undo (⌘Z)</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={redo}
-                disabled={!canRedo}
-                aria-label='Redo'
-              >
-                <Redo2 className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Redo (⌘⇧Z)</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            onClick={addNode}
+            label='Add node'
+            tooltip='Add Node'
+            icon={<Plus className='h-4 w-4' />}
+          />
+          <ToolbarButton
+            onClick={undo}
+            label='Undo'
+            tooltip='Undo (⌘Z)'
+            icon={<Undo2 className='h-4 w-4' />}
+            disabled={!canUndo}
+          />
+          <ToolbarButton
+            onClick={redo}
+            label='Redo'
+            tooltip='Redo (⌘⇧Z)'
+            icon={<Redo2 className='h-4 w-4' />}
+            disabled={!canRedo}
+          />
 
           <Separator orientation='vertical' className='mx-1 h-5' />
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={() => setImportOpen(true)}
-                aria-label='Import JSON'
-              >
-                <Upload className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Import</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={handleDownload}
-                aria-label='Download JSON'
-              >
-                <Download className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Download (⌘S)</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={handleCopy}
-                aria-label='Copy JSON'
-              >
-                <Copy className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Copy JSON</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            onClick={() => setImportOpen(true)}
+            label='Import JSON'
+            tooltip='Import'
+            icon={<Upload className='h-4 w-4' />}
+          />
+          <ToolbarButton
+            onClick={handleDownload}
+            label='Download JSON'
+            tooltip='Download (⌘S)'
+            icon={<Download className='h-4 w-4' />}
+          />
+          <ToolbarButton
+            onClick={handleCopy}
+            label='Copy JSON'
+            tooltip='Copy JSON'
+            icon={<Copy className='h-4 w-4' />}
+          />
 
           <Separator orientation='vertical' className='mx-1 h-5' />
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant={jsonPanelOpen ? 'secondary' : 'ghost'}
-                size='icon'
-                className='h-8 w-8'
-                onClick={toggleJsonPanel}
-                aria-label='Toggle JSON panel'
-              >
-                <Code2 className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>JSON Panel</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={handleAutoLayout}
-                aria-label='Auto layout'
-              >
-                <LayoutGrid className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Auto Layout</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            onClick={toggleJsonPanel}
+            label='Toggle JSON panel'
+            tooltip='JSON Panel'
+            icon={<Code2 className='h-4 w-4' />}
+            variant={jsonPanelOpen ? 'secondary' : 'ghost'}
+          />
+          <ToolbarButton
+            onClick={handleAutoLayout}
+            label='Auto layout'
+            tooltip='Auto Layout'
+            icon={<LayoutGrid className='h-4 w-4' />}
+          />
 
           <Separator orientation='vertical' className='mx-1 h-5' />
 
           {/* Validation badge */}
-          <ValidationBadge
+          <ValidationBadgeDropdown
             errorCount={errorCount}
             warningCount={warningCount}
           />
 
           {/* Dark mode toggle */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
-                onClick={handleToggleDark}
-                aria-label='Toggle dark mode'
-              >
-                {darkMode ? (
-                  <Sun className='h-4 w-4' />
-                ) : (
-                  <Moon className='h-4 w-4' />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {darkMode ? 'Light mode' : 'Dark mode'}
-            </TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            onClick={handleToggleDark}
+            label='Toggle dark mode'
+            tooltip={darkMode ? 'Light mode' : 'Dark mode'}
+            icon={
+              darkMode ? (
+                <Sun className='h-4 w-4' />
+              ) : (
+                <Moon className='h-4 w-4' />
+              )
+            }
+          />
         </div>
       </header>
 
       <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
     </>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Validation Badge — extracted for clarity                            */
-/* ------------------------------------------------------------------ */
-
-function ValidationBadge({
-  errorCount,
-  warningCount,
-}: {
-  errorCount: number;
-  warningCount: number;
-}) {
-  if (errorCount > 0) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='h-8 gap-1 px-2 text-red-500'
-            aria-label={`${errorCount} validation error${errorCount !== 1 ? 's' : ''}`}
-          >
-            <XCircle className='h-4 w-4' />
-            <span className='text-xs'>{errorCount}</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {errorCount} error{errorCount !== 1 ? 's' : ''}
-          {warningCount > 0 &&
-            `, ${warningCount} warning${warningCount !== 1 ? 's' : ''}`}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  if (warningCount > 0) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='h-8 gap-1 px-2 text-amber-500'
-            aria-label={`${warningCount} validation warning${warningCount !== 1 ? 's' : ''}`}
-          >
-            <AlertTriangle className='h-4 w-4' />
-            <span className='text-xs'>{warningCount}</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {warningCount} warning{warningCount !== 1 ? 's' : ''}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant='ghost'
-          size='sm'
-          className='h-8 gap-1 px-2 text-green-500'
-          aria-label='No validation issues'
-        >
-          <CheckCircle className='h-4 w-4' />
-          <span className='text-xs'>Valid</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>No issues found</TooltipContent>
-    </Tooltip>
   );
 }
