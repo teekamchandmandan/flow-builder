@@ -36,6 +36,35 @@ type ImportResult = {
   errors?: string[];
 };
 
+function formatIssuePath(path: (string | number)[]): string {
+  if (path.length === 0) {
+    return 'root';
+  }
+
+  return path
+    .map((segment, index) => {
+      if (typeof segment === 'number') {
+        return `[${segment}]`;
+      }
+
+      if (index === 0) {
+        return segment;
+      }
+
+      return `.${segment}`;
+    })
+    .join('');
+}
+
+function formatZodIssues(error: ZodError): string[] {
+  const messages = error.issues.map((issue) => {
+    const path = formatIssuePath(issue.path as (string | number)[]);
+    return `${path}: ${issue.message}`;
+  });
+
+  return Array.from(new Set(messages));
+}
+
 type StoreState = {
   nodes: FlowNode[];
   edges: FlowEdge[];
@@ -441,7 +470,7 @@ export const useFlowStore = create<StoreState>((set, get) => ({
       if (error instanceof ZodError) {
         return {
           success: false,
-          errors: error.issues.map((issue) => issue.message),
+          errors: formatZodIssues(error),
         };
       }
 

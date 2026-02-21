@@ -41,8 +41,12 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     // Quick JSON syntax check
     try {
       JSON.parse(jsonText);
-    } catch {
-      setImportErrors(['Invalid JSON syntax']);
+    } catch (error) {
+      if (error instanceof Error) {
+        setImportErrors([`Invalid JSON syntax: ${error.message}`]);
+      } else {
+        setImportErrors(['Invalid JSON syntax']);
+      }
       return;
     }
 
