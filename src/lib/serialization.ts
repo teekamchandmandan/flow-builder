@@ -54,6 +54,7 @@ export function fromSchema(schema: FlowSchema): {
 } {
   const nodes: FlowNode[] = schema.nodes.map((schemaNode) => ({
     id: schemaNode.id,
+    type: 'custom' as const,
     position: schemaNode.position ?? { x: 0, y: 0 },
     data: {
       label: schemaNode.label ?? schemaNode.id,
@@ -62,9 +63,12 @@ export function fromSchema(schema: FlowSchema): {
     },
   }));
 
+  const edgeType = 'custom' as const;
+
   const edges: FlowEdge[] = schema.nodes.flatMap((schemaNode) =>
     schemaNode.edges.map((schemaEdge) => ({
       id: generateId(),
+      type: edgeType,
       source: schemaNode.id,
       target: schemaEdge.to_node_id,
       data: {
