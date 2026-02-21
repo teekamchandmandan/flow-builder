@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback } from 'react';
 import {
   EdgeLabelRenderer,
   getSmoothStepPath,
@@ -8,6 +8,7 @@ import { X } from 'lucide-react';
 
 import { useFlowStore } from '@/store/flowStore';
 import { cn } from '@/lib/utils';
+import { EdgeLabelEditor } from '@/components/Canvas/EdgeLabelEditor';
 import type { EdgeData } from '@/types/flow';
 
 function CustomEdgeInner({
@@ -27,10 +28,6 @@ function CustomEdgeInner({
   const updateEdgeData = useFlowStore((s) => s.updateEdgeData);
   const deleteEdge = useFlowStore((s) => s.deleteEdge);
 
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(condition);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -40,29 +37,11 @@ function CustomEdgeInner({
     targetPosition,
   });
 
-  const onLabelClick = useCallback(() => {
-    setDraft(condition);
-    setEditing(true);
-    // Focus after render
-    requestAnimationFrame(() => inputRef.current?.focus());
-  }, [condition]);
-
-  const commitEdit = useCallback(() => {
-    setEditing(false);
-    if (draft.trim() !== condition) {
-      updateEdgeData(id, { condition: draft.trim() || condition });
-    }
-  }, [id, draft, condition, updateEdgeData]);
-
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') commitEdit();
-      if (e.key === 'Escape') {
-        setDraft(condition);
-        setEditing(false);
-      }
+  const handleConditionCommit = useCallback(
+    (value: string) => {
+      updateEdgeData(id, { condition: value });
     },
-    [commitEdit, condition],
+    [id, updateEdgeData],
   );
 
   const handleDelete = useCallback(
@@ -72,9 +51,6 @@ function CustomEdgeInner({
     },
     [id, deleteEdge],
   );
-
-  const truncated =
-    condition.length > 24 ? `${condition.slice(0, 24)}…` : condition;
 
   return (
     <>
@@ -96,26 +72,10 @@ function CustomEdgeInner({
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
           }}
         >
-          {editing ? (
-            <input
-              ref={inputRef}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={commitEdit}
-              onKeyDown={onKeyDown}
-              className='rounded border border-input bg-background px-2 py-0.5 text-xs text-foreground outline-none ring-1 ring-ring w-32'
-              aria-label='Edit edge condition'
-            />
-          ) : (
-            <button
-              type='button'
-              onClick={onLabelClick}
-              className='cursor-pointer rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground shadow-sm transition-colors hover:bg-muted'
-              aria-label={`Edge condition: ${condition}`}
-            >
-              {truncated || 'Add condition'}
-            </button>
-          )}
+          <EdgeLabelEditor
+            condition={condition}
+            onCommit={handleConditionCommit}
+          />
 
           <button
             type='button'

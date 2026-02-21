@@ -29,9 +29,6 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
   const hasWarning = useFlowStore((s) =>
     s.warnings.some((w) => w.nodeId === id),
   );
-  const edgeCount = useFlowStore(
-    (s) => s.edges.filter((e) => e.source === id).length,
-  );
 
   let status: Status = 'default';
   if (id === startNodeId) status = 'start';
@@ -75,14 +72,6 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
             {descriptionPreview}
           </p>
         ) : null}
-        <div className='flex items-center justify-end'>
-          <Badge
-            variant='secondary'
-            className='text-[10px] px-1.5 py-0 leading-4'
-          >
-            {edgeCount} edge{edgeCount !== 1 ? 's' : ''}
-          </Badge>
-        </div>
       </div>
 
       <Handle
