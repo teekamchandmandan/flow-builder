@@ -67,11 +67,11 @@ function CustomNodeInner({ id, data, selected }: NodeProps<FlowNode>) {
 
       <div className='px-3 py-2.5 space-y-1'>
         <p className='text-sm font-semibold truncate'>{data.label}</p>
-        {descriptionPreview ? (
-          <p className='text-xs text-muted-foreground truncate'>
-            {descriptionPreview}
-          </p>
-        ) : null}
+        <p className='text-xs text-muted-foreground truncate'>
+          {descriptionPreview || (
+            <span className='italic opacity-50'>No description</span>
+          )}
+        </p>
       </div>
 
       <Handle

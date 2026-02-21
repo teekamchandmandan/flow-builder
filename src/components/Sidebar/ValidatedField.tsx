@@ -12,6 +12,10 @@ interface ValidatedFieldProps {
   placeholder?: string;
   multiline?: boolean;
   className?: string;
+  /** Show a red asterisk next to the label. */
+  required?: boolean;
+  /** Subtle helper text shown below the label. */
+  helperText?: string;
 }
 
 /**
@@ -28,6 +32,8 @@ export function ValidatedField({
   placeholder,
   multiline = false,
   className,
+  required,
+  helperText,
 }: ValidatedFieldProps) {
   const errorId = error ? `${id}-error` : undefined;
   const Component = multiline ? Textarea : Input;
@@ -36,7 +42,11 @@ export function ValidatedField({
     <div className='space-y-1.5'>
       <label htmlFor={id} className='text-sm font-medium'>
         {label}
+        {required && <span className='ml-0.5 text-red-500'>*</span>}
       </label>
+      {helperText && (
+        <p className='text-xs text-muted-foreground -mt-0.5'>{helperText}</p>
+      )}
       <Component
         id={id}
         value={value}

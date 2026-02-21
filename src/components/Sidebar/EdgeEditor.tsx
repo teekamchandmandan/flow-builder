@@ -123,7 +123,7 @@ export function EdgeEditor({ edge, sourceNodeId }: EdgeEditorProps) {
           htmlFor={`edge-condition-${edge.id}`}
           className='text-xs font-medium'
         >
-          Condition
+          Condition <span className='text-red-500'>*</span>
         </label>
         <Input
           id={`edge-condition-${edge.id}`}

@@ -37,19 +37,28 @@ export function NodeSidebarHeader({
     <SheetHeader className='px-6 pt-6 pb-2'>
       {/* Editable label heading */}
       <SheetTitle className='sr-only'>Edit Node</SheetTitle>
-      <Input
-        id='node-label'
-        value={label}
-        onChange={(e) => onLabelChange(e.target.value)}
-        onBlur={onLabelBlur}
-        className={cn(
-          'text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0',
-          labelError && 'text-red-500',
-        )}
-        aria-label='Node label'
-        aria-invalid={labelError || undefined}
-        aria-describedby={labelError ? 'node-label-error' : undefined}
-      />
+      <div className='space-y-1'>
+        <label
+          htmlFor='node-label'
+          className='text-xs font-medium text-muted-foreground'
+        >
+          Name <span className='text-red-500'>*</span>
+        </label>
+        <Input
+          id='node-label'
+          value={label}
+          onChange={(e) => onLabelChange(e.target.value)}
+          onBlur={onLabelBlur}
+          className={cn(
+            'text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0',
+            labelError && 'text-red-500',
+          )}
+          placeholder='Enter node name…'
+          aria-label='Node label'
+          aria-invalid={labelError || undefined}
+          aria-describedby={labelError ? 'node-label-error' : undefined}
+        />
+      </div>
       {labelError && (
         <p id='node-label-error' className='text-xs text-red-500' role='alert'>
           Node name is required

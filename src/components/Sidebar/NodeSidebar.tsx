@@ -193,6 +193,11 @@ export function NodeSidebar() {
 
           <ScrollArea className='flex-1 px-6'>
             <div className='space-y-5 py-4'>
+              {/* Section heading */}
+              <h3 className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                Node Details
+              </h3>
+
               {/* Description field */}
               <ValidatedField
                 id='node-description'
@@ -202,7 +207,9 @@ export function NodeSidebar() {
                 onBlur={() => markTouched('description')}
                 error={descError && 'Description is required'}
                 placeholder='Describe what this node does…'
+                helperText='A short summary shown on the canvas card'
                 multiline
+                required
                 className='min-h-[80px]'
               />
 
@@ -214,8 +221,10 @@ export function NodeSidebar() {
                 onChange={(v) => handleFieldChange('prompt', v)}
                 onBlur={() => markTouched('prompt')}
                 error={promptError && 'Prompt is required'}
-                placeholder='Enter the prompt…'
+                placeholder='Enter the prompt text…'
+                helperText='The prompt text associated with this node'
                 multiline
+                required
                 className='min-h-[100px]'
               />
 
