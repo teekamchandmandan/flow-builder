@@ -1,26 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
@@ -29,11 +11,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Switch } from '@/components/ui/switch';
-import { EdgeEditor } from '@/components/Sidebar/EdgeEditor';
+import { DeleteNodeDialog } from '@/components/Sidebar/DeleteNodeDialog';
+import { NodeSidebarHeader } from '@/components/Sidebar/NodeSidebarHeader';
+import { OutgoingEdgesSection } from '@/components/Sidebar/OutgoingEdgesSection';
 import { ValidatedField } from '@/components/Sidebar/ValidatedField';
 import { useFlowStore } from '@/store/flowStore';
-import { cn } from '@/lib/utils';
 import type { NodeData } from '@/types/flow';
 
 /**
@@ -197,53 +179,15 @@ export function NodeSidebar() {
           side='right'
           className='flex w-[380px] flex-col p-0 sm:max-w-[380px]'
         >
-          <SheetHeader className='px-6 pt-6 pb-2'>
-            {/* Editable label heading */}
-            <SheetTitle className='sr-only'>Edit Node</SheetTitle>
-            <Input
-              id='node-label'
-              value={label}
-              onChange={(e) => handleFieldChange('label', e.target.value)}
-              onBlur={() => markTouched('label')}
-              className={cn(
-                'text-lg font-semibold border-none shadow-none px-0 h-auto focus-visible:ring-0',
-                labelError && 'text-red-500',
-              )}
-              aria-label='Node label'
-              aria-invalid={labelError || undefined}
-              aria-describedby={labelError ? 'node-label-error' : undefined}
-            />
-            {labelError && (
-              <p
-                id='node-label-error'
-                className='text-xs text-red-500'
-                role='alert'
-              >
-                Node name is required
-              </p>
-            )}
-
-            {/* Start node toggle */}
-            <div className='flex items-center justify-between pt-1'>
-              <label
-                htmlFor='start-node-switch'
-                className='text-sm font-medium'
-              >
-                Set as Start Node
-              </label>
-              <Switch
-                id='start-node-switch'
-                checked={isStart}
-                onCheckedChange={handleStartToggle}
-                aria-label='Set as start node'
-              />
-            </div>
-
-            {/* Read-only node ID */}
-            <SheetDescription className='font-mono text-[11px]'>
-              {selectedNodeId}
-            </SheetDescription>
-          </SheetHeader>
+          <NodeSidebarHeader
+            label={label}
+            labelError={labelError}
+            isStart={isStart}
+            selectedNodeId={selectedNodeId!}
+            onLabelChange={(v) => handleFieldChange('label', v)}
+            onLabelBlur={() => markTouched('label')}
+            onStartToggle={handleStartToggle}
+          />
 
           <Separator />
 
@@ -278,79 +222,14 @@ export function NodeSidebar() {
               <Separator />
 
               {/* Outgoing Edges section */}
-              <div className='space-y-3'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-sm font-medium'>Outgoing Edges</span>
-                    <Badge variant='secondary' className='text-[10px] px-1.5'>
-                      {outgoingEdges.length}
-                    </Badge>
-                  </div>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    size='sm'
-                    className='h-7 text-xs'
-                    onClick={() => setAddEdgeOpen(true)}
-                    disabled={edgeTargetOptions.length === 0}
-                    aria-label='Add outgoing edge'
-                  >
-                    <Plus className='mr-1 h-3 w-3' />
-                    Add Edge
-                  </Button>
-                </div>
-
-                {/* Add-edge target selector */}
-                {addEdgeOpen && (
-                  <div className='space-y-1.5 rounded-md border border-dashed border-border p-3'>
-                    <label className='text-xs font-medium'>
-                      Select target node
-                    </label>
-                    <Select onValueChange={handleAddEdge}>
-                      <SelectTrigger className='h-8 text-xs'>
-                        <SelectValue placeholder='Choose a node…' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {edgeTargetOptions.map((node) => (
-                          <SelectItem
-                            key={node.id}
-                            value={node.id}
-                            className='text-xs'
-                          >
-                            {node.data.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='sm'
-                      className='h-6 text-xs'
-                      onClick={() => setAddEdgeOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-
-                {/* Edge list */}
-                {outgoingEdges.length === 0 ? (
-                  <p className='text-xs text-muted-foreground italic'>
-                    No outgoing edges
-                  </p>
-                ) : (
-                  <div className='space-y-2'>
-                    {outgoingEdges.map((edge) => (
-                      <EdgeEditor
-                        key={edge.id}
-                        edge={edge}
-                        sourceNodeId={selectedNodeId!}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              <OutgoingEdgesSection
+                outgoingEdges={outgoingEdges}
+                edgeTargetOptions={edgeTargetOptions}
+                selectedNodeId={selectedNodeId!}
+                addEdgeOpen={addEdgeOpen}
+                onAddEdgeOpenChange={setAddEdgeOpen}
+                onAddEdge={handleAddEdge}
+              />
             </div>
           </ScrollArea>
 
@@ -371,27 +250,11 @@ export function NodeSidebar() {
       </Sheet>
 
       {/* Delete confirmation dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Node</DialogTitle>
-            <DialogDescription>
-              Are you sure? This will also remove all connected edges.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant='destructive' onClick={handleDeleteConfirm}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteNodeDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }
