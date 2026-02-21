@@ -2,7 +2,17 @@
 
 A single-page visual flow builder where users construct node-based workflows, connect them with conditional transitions, validate in real time, and export/import as JSON.
 
-**Live demo:** _Add deployed URL here_
+**Live demo:** [https://flow-builder-ruddy.vercel.app](https://flow-builder-ruddy.vercel.app)
+
+## Screenshots
+
+|              Flow Canvas with JSON Preview               |                    Node Sidebar Editing                    |
+| :------------------------------------------------------: | :--------------------------------------------------------: |
+| ![Flow with JSON](public/screenshots/flow-with-json.png) | ![Sidebar Editing](public/screenshots/sidebar-editing.png) |
+
+|                       Validation Errors                        |                   Dark Mode                    |
+| :------------------------------------------------------------: | :--------------------------------------------: |
+| ![Validation Errors](public/screenshots/validation-errors.png) | ![Dark Mode](public/screenshots/dark-mode.png) |
 
 ## Features
 
